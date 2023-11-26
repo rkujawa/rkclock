@@ -5,15 +5,20 @@ BINDIR=bin
 SRCDIR=src
 BINARY=rkclock
 
+OPENCM3_DIR=./libopencm3
+OPENCM3_LIBDIR=$(OPENCM3_DIR)/lib
+OPENCM3_BIN=$(OPENCM3_LIBDIR)/libopencm3_stm32l0.a
+
 CFLAGS= -std=c11 -g3 -Os
 CFLAGS+= -fno-common -ffunction-sections -fdata-sections
-CFLAGS+= -I./libopencm3/include
+CFLAGS+= -I$(OPENCM3_DIR)/include
 CFLAGS+= -mcpu=cortex-m0plus -mthumb -msoft-float
 # STM32L0 starts up with MSI at 2.1Mhz
 CFLAGS+= -DSTM32L0
 
 #  -lopencm3_stm32l0
-LDFLAGS+=-Wl,--start-group -L./libopencm3/lib -lc -lgcc -lnosys -mcpu=cortex-m0plus -Wl,--end-group --static -nostartfiles -T $(SRCDIR)/nucleo-l011k4.ld 
+LDSCRIPT=$(SRCDIR)/nucleo-l011k4.ld
+LDFLAGS+=-Wl,--start-group -L$(OPENCM3_LIBDIR) -lc -lgcc -lnosys -mcpu=cortex-m0plus -Wl,--end-group --static -nostartfiles -T $(LDSCRIPT)
 
 ##
 BINARY_ELF+=$(BINDIR)/$(BINARY).elf
@@ -26,8 +31,8 @@ libopencm3/Makefile:
 	@echo "Initializing libopencm3 submodule"
 	git submodule update --init
 
-libopencm3/lib/libopencm3_stm32l0.a: libopencm3/Makefile
-	$(MAKE) V=1 TARGETS='stm32/l0' -C libopencm3
+$(OPENCM3_BIN): $(OPENCM3_DIR)/Makefile
+	$(MAKE) V=1 TARGETS='stm32/l0' -C $(OPENCM3_DIR)
 
 %.bin: %.elf
 	$(OBJCOPY) -Obinary $(*).elf $(*).bin
@@ -38,8 +43,8 @@ libopencm3/lib/libopencm3_stm32l0.a: libopencm3/Makefile
 $(BINDIR)/%.o : $(SRCDIR)/%.c
 	$(CC) -c $(CFLAGS) $< -o $@
 
-$(BINDIR)/$(BINARY).elf: $(BINDIR)/main.o libopencm3/lib/libopencm3_stm32l0.a
-	$(CC) $(LDFLAGS) $(BINDIR)/main.o libopencm3/lib/libopencm3_stm32l0.a -o $@
+$(BINDIR)/$(BINARY).elf: $(BINDIR)/main.o $(OPENCM3_BIN)
+	$(CC) $(LDFLAGS) $(BINDIR)/main.o $(OPENCM3_BIN) -o $@
 
 outdir:
 	mkdir -p $(BINDIR)
@@ -47,8 +52,11 @@ outdir:
 flash:
 	openocd -f st_nucleo_l011k4.cfg -c "program $(BINARY_ELF) verify reset exit"
 
+serial-console:
+	cu -s 9600 -l /dev/ttyACM0
+
 clean:
 	$(RM) $(BINDIR)/*.o $(BINARY_ELF) $(BINARY_BIN) $(BINARY_HEX)
 
-.PHONY: outdir clean all
+.PHONY: outdir clean flash serial-console all
 #$(V).SILENT:
