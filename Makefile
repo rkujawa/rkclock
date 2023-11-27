@@ -9,7 +9,8 @@ OPENCM3_DIR=./libopencm3
 OPENCM3_LIBDIR=$(OPENCM3_DIR)/lib
 OPENCM3_BIN=$(OPENCM3_LIBDIR)/libopencm3_stm32l0.a
 
-CFLAGS= -std=c11 -g3 -Os
+CFLAGS= -std=c17 -Os -Wall
+CFLAGS+= -g3
 CFLAGS+= -fno-common -ffunction-sections -fdata-sections
 CFLAGS+= -I$(OPENCM3_DIR)/include
 CFLAGS+= -mcpu=cortex-m0plus -mthumb -msoft-float
@@ -24,6 +25,8 @@ LDFLAGS+=-Wl,--start-group -L$(OPENCM3_LIBDIR) -lc -lgcc -lnosys -mcpu=cortex-m0
 BINARY_ELF+=$(BINDIR)/$(BINARY).elf
 BINARY_BIN+=$(BINDIR)/$(BINARY).bin
 BINARY_HEX+=$(BINDIR)/$(BINARY).hex
+
+OBJS=$(BINDIR)/main.o $(BINDIR)/tm1637.o
 
 all: outdir $(BINARY_ELF) $(BINARY_BIN) $(BINARY_HEX)
 
@@ -43,8 +46,8 @@ $(OPENCM3_BIN): $(OPENCM3_DIR)/Makefile
 $(BINDIR)/%.o : $(SRCDIR)/%.c
 	$(CC) -c $(CFLAGS) $< -o $@
 
-$(BINDIR)/$(BINARY).elf: $(BINDIR)/main.o $(OPENCM3_BIN)
-	$(CC) $(LDFLAGS) $(BINDIR)/main.o $(OPENCM3_BIN) -o $@
+$(BINDIR)/$(BINARY).elf: $(OBJS) $(OPENCM3_BIN)
+	$(CC) $(LDFLAGS) $(OBJS) $(OPENCM3_BIN) -o $@
 
 outdir:
 	mkdir -p $(BINDIR)
