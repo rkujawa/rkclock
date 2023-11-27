@@ -26,7 +26,7 @@ BINARY_ELF+=$(BINDIR)/$(BINARY).elf
 BINARY_BIN+=$(BINDIR)/$(BINARY).bin
 BINARY_HEX+=$(BINDIR)/$(BINARY).hex
 
-OBJS=$(BINDIR)/main.o $(BINDIR)/tm1637.o
+OBJS=$(BINDIR)/main.o $(BINDIR)/tm1637.o $(BINDIR)/usart.o
 
 all: outdir $(BINARY_ELF) $(BINARY_BIN) $(BINARY_HEX)
 
