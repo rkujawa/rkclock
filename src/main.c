@@ -4,8 +4,17 @@
 #include <libopencm3/stm32/rtc.h>
 #include <libopencm3/stm32/gpio.h>
 
+#include <libopencm3/cm3/nvic.h>
+#include <libopencm3/cm3/systick.h>
+
 #include "tm1637.h"
 #include "usart.h"
+
+#ifdef STM32L0
+#define MSI_DEFAULT_FREQ ((uint32_t)2097000) /* in Hz */
+#endif 
+
+static uint32_t ticks = 0;
 
 static void 
 rcc_rtc_select_clock(uint32_t clock)
@@ -59,7 +68,32 @@ rtc_setup(void)
 
 	/* And wait for synchro.. */
 	rtc_wait_for_synchro();
+
+//	rtc_interrupt_enable(RTC_SEC);
+
 	return 0;
+}
+
+/*
+void rtc_isr(void)
+{
+//	rtc_clear_flag(RTC_SEC);
+
+	gpio_toggle(GPIOC, GPIO12);
+	//usart_test();
+}
+*/
+
+void 
+sys_tick_handler(void)
+{
+	ticks++;
+
+	/* We call this handler every 1ms so 1000ms = 1s on/off. */
+	if (ticks == 1000) {
+		gpio_toggle(GPIOB, GPIO3);
+		ticks = 0;
+	}
 }
 
 int 
@@ -70,15 +104,28 @@ main(void)
 	gpio_set(GPIOB, GPIO3);
 
 	rtc_setup();
-	tm1637_setup();
+/*	tm1637_setup();
+	tm1637_demo(); */
 
 	usart_setup();
+/*
+	nvic_enable_irq(NVIC_RTC_IRQ);
+	nvic_set_priority(NVIC_RTC_IRQ, 2);
+*/
+
+	/* MSI Hz counts per second */
+	systick_set_clocksource(STK_CSR_CLKSOURCE_AHB);
+	/* MSI / 2097 = 1000 overflows per second - every 1ms one interrupt */
+	systick_set_reload((MSI_DEFAULT_FREQ/1000)-1);
+
+	systick_interrupt_enable();
+	systick_counter_enable();
 
 	while(1) {
 		for (int i = 0; i < 50000; i++) {
 			__asm__("nop");
 		}
-		gpio_toggle(GPIOB, GPIO3);
+//		gpio_toggle(GPIOB, GPIO3);
 		usart_test();
 	}
 }
