@@ -9,6 +9,7 @@
 
 #include "tm1637.h"
 #include "usart.h"
+#include "key.h"
 
 #ifdef STM32L0
 #define MSI_DEFAULT_FREQ ((uint32_t)2097000) /* in Hz */
@@ -90,10 +91,14 @@ sys_tick_handler(void)
 	ticks++;
 
 	/* We call this handler every 1ms so 1000ms = 1s on/off. */
-	if (ticks == 1000) {
+	/*if (ticks == 1000) {
 		gpio_toggle(GPIOB, GPIO3);
 		ticks = 0;
 	}
+	*/
+
+	if ((ticks % 10) == 0)
+		key_isr();
 }
 
 int 
@@ -127,6 +132,10 @@ main(void)
 		}
 //		gpio_toggle(GPIOB, GPIO3);
 		usart_test();
+
+		if (get_key_press(KEY0)) {
+			gpio_toggle(GPIOB, GPIO3);
+		}
 	}
 }
 
