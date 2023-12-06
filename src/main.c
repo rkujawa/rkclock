@@ -15,6 +15,9 @@
 #define MSI_DEFAULT_FREQ ((uint32_t)2097000) /* in Hz */
 #endif 
 
+static void clock_hour_increment();
+static void clock_minute_increment();
+
 static uint32_t ticks = 0;
 
 static void 
@@ -31,15 +34,18 @@ rtc_setup(void)
 	rcc_periph_clock_enable(RCC_PWR);
 	pwr_disable_backup_domain_write_protect();
 
-	/* reset rtc */
+	/* Reset the RTC. */
 	RCC_CSR |= RCC_CSR_RTCRST;
 	RCC_CSR &= ~RCC_CSR_RTCRST;
 
-	/* use the LSE clock */
+	/* Turn on the LSE clock. */
 	rcc_osc_on(RCC_LSE);
 	rcc_wait_for_osc_ready(RCC_LSE);
 
-	/* Select the LSE as rtc clock */
+	/*
+	 * Use LSE as RTC clock. Nucleo L011K4 is equipped with 32768 Hz quartz
+	 * connected to LSE oscillator input.
+	 */
 	rcc_rtc_select_clock(RCC_CSR_RTCSEL_LSE);
 
 	RCC_CSR |= RCC_CSR_RTCEN;
@@ -67,7 +73,6 @@ rtc_setup(void)
 	/* and finally enable the clock */
 	RCC_CSR |= RCC_CSR_RTCEN;
 
-	/* And wait for synchro.. */
 	rtc_wait_for_synchro();
 
 //	rtc_interrupt_enable(RTC_SEC);
@@ -101,6 +106,18 @@ sys_tick_handler(void)
 		key_isr();
 }
 
+static void
+clock_hour_increment(void)
+{
+	gpio_toggle(GPIOB, GPIO3);
+}
+
+static void
+clock_minute_increment(void)
+{
+	gpio_toggle(GPIOB, GPIO3);
+}
+
 int 
 main(void) 
 {
@@ -130,11 +147,13 @@ main(void)
 		for (int i = 0; i < 50000; i++) {
 			__asm__("nop");
 		}
-//		gpio_toggle(GPIOB, GPIO3);
 		usart_test();
 
-		if (get_key_press(KEY0)) {
-			gpio_toggle(GPIOB, GPIO3);
+		if (get_key_press(KEY_H)) {
+			clock_hour_increment();
+		}
+		if (get_key_press(KEY_M)) {
+			clock_minute_increment();
 		}
 	}
 }

@@ -1,18 +1,19 @@
 #ifndef _KEY_H_ 
 #define _KEY_H_ 
 
-#define KEY0              GPIO0
+#define KEY_H             GPIO0
+#define KEY_M             GPIO1
 #define KEY_PORT          GPIOA
 #define KEY_CLOCK         RCC_GPIOA
 //Add keys on the same port to keymask: (KEY0 | KEY1 | KEY2)
-#define KEY_MASK          (KEY0)
+#define KEY_MASK          (KEY_H|KEY_M)
 
 /*********************** Debounce ****************************
 * Info on debounce code:
 * https://github.com/szczys/Button-Debounce/blob/master/debounce-test.c 
 */
 //Debounce
-#define REPEAT_MASK   (KEY0)   // repeat: key1, key2 
+#define REPEAT_MASK   (KEY_H|KEY_M)   // repeat: key1, key2 
 #define REPEAT_START  50       // after 500ms 
 #define REPEAT_NEXT   70       // every 700ms
 /************************************************************/
