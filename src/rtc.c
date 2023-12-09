@@ -3,6 +3,8 @@
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/rtc.h>
 
+#define RTC_TR_RESERVED_MASK	(0x007F7F7FU)
+
 static void 
 rcc_rtc_select_clock(uint32_t clock)
 {
@@ -10,7 +12,41 @@ rcc_rtc_select_clock(uint32_t clock)
 	RCC_CSR |= (clock << RCC_CSR_RTCSEL_SHIFT);
 }
 
-int 
+/* Convert 8-bit BCD to binary value. */
+static 
+uint8_t from_bcd(uint8_t val)
+{
+        return (10 * (val >> 4) + (0x0F & val));
+}
+
+static uint32_t
+rtc_get_time()
+{
+	uint32_t time = RTC_TR & RTC_TR_RESERVED_MASK;
+
+	while (time != (RTC_TR & RTC_TR_RESERVED_MASK)) {
+		time = RTC_TR & RTC_TR_RESERVED_MASK;
+	}	
+	return time;
+}
+
+uint16_t
+rtc_get_hourminute()
+{
+	uint8_t ht, hu, mt, mu;
+	uint32_t time;
+
+	time = rtc_get_time();
+
+	ht = from_bcd((time >> RTC_TR_HT_SHIFT) & RTC_TR_HT_MASK);
+	hu = from_bcd((time >> RTC_TR_HU_SHIFT) & RTC_TR_HU_MASK);
+	mt = from_bcd((time >> RTC_TR_MNT_SHIFT) & RTC_TR_MNT_MASK);
+	mu = from_bcd((time >> RTC_TR_MNU_SHIFT) & RTC_TR_MNU_MASK);
+
+	return ht*1000 + hu*100 + mt*10 + mu;
+}
+
+void 
 rtc_setup(void)
 {
 	/* turn on power block to enable unlocking */
@@ -60,7 +96,6 @@ rtc_setup(void)
 
 //	rtc_interrupt_enable(RTC_SEC);
 
-	return 0;
 }
 
 /*

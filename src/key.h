@@ -1,8 +1,8 @@
 #ifndef _KEY_H_ 
 #define _KEY_H_ 
 
-#define KEY_H             GPIO0
-#define KEY_M             GPIO1
+#define KEY_H             GPIO6
+#define KEY_M             GPIO7
 #define KEY_PORT          GPIOA
 #define KEY_CLOCK         RCC_GPIOA
 //Add keys on the same port to keymask: (KEY0 | KEY1 | KEY2)

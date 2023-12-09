@@ -26,11 +26,11 @@ sys_tick_handler(void)
 	ticks++;
 
 	/* We call this handler every 1ms so 1000ms = 1s on/off. */
-	/*if (ticks == 1000) {
+/*	if (ticks == 1000) {
 		gpio_toggle(GPIOB, GPIO3);
 		ticks = 0;
 	}
-	*/
+*/	
 
 	if ((ticks % 10) == 0)
 		key_isr();
@@ -55,9 +55,11 @@ main(void)
 	gpio_mode_setup(GPIOB, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO3);
 	gpio_set(GPIOB, GPIO3);
 
+	rcc_periph_clock_enable(RCC_GPIOA);
+	gpio_mode_setup(GPIOA, GPIO_MODE_INPUT, GPIO_PUPD_PULLUP, GPIO6);
+	gpio_mode_setup(GPIOA, GPIO_MODE_INPUT, GPIO_PUPD_PULLUP, GPIO7);
+
 	rtc_setup();
-/*	tm1637_setup();
-	tm1637_demo(); */
 
 	usart_setup();
 /*
@@ -73,11 +75,16 @@ main(void)
 	systick_interrupt_enable();
 	systick_counter_enable();
 
+	tm1637_setup();
+//	tm1637_demo(); 
+
 	while(true) {
-		for (int i = 0; i < 50000; i++) {
+/*		for (int i = 0; i < 50000; i++) {
 			__asm__("nop");
 		}
 		usart_test();
+*/
+		tm1637_display_decimal(rtc_get_hourminute(), true);
 
 		if (get_key_press(KEY_H)) {
 			clock_hour_increment();
