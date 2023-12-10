@@ -130,7 +130,7 @@ rtc_get_hourminute()
 void 
 rtc_setup(void)
 {
-	/* turn on power block to enable unlocking */
+	/* Turn on power block to enable unlocking. */
 	rcc_periph_clock_enable(RCC_PWR);
 	pwr_disable_backup_domain_write_protect();
 
@@ -152,40 +152,33 @@ rtc_setup(void)
 
 	rtc_unlock();
 
-	/* enter init mode */
 	rtc_set_init_flag();
 
 	rtc_wait_for_init_ready();
 
-	/* set synch prescaler, using defaults for 1Hz out */
+	/* Set synch prescaler, using defaults for 1Hz out. */
 	uint32_t sync = 255;
 	uint32_t async = 127;
 	rtc_set_prescaler(sync, async);
 
-	/* load time and date here if desired, and hour format */
-
-	/* exit init mode */
+	/* Exit init mode, write protect and enable the clock.. */
 	rtc_clear_init_flag();
-
-	/* and write protect again */
 	rtc_lock();
-
-	/* and finally enable the clock */
 	RCC_CSR |= RCC_CSR_RTCEN;
-
 	rtc_wait_for_synchro();
 
-//	rtc_interrupt_enable(RTC_SEC);
+	/* If we ever need the interrupt... */
+	//rtc_interrupt_enable(RTC_SEC);
 
 }
 
 /*
 void rtc_isr(void)
 {
-//	rtc_clear_flag(RTC_SEC);
+	rtc_clear_flag(RTC_SEC);
 
 	gpio_toggle(GPIOC, GPIO12);
-	//usart_test();
+	usart_test();
 }
 */
 

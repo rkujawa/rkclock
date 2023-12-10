@@ -52,7 +52,7 @@ main(void)
 {
 	rcc_periph_clock_enable(RCC_GPIOB);
 	gpio_mode_setup(GPIOB, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO3);
-//	gpio_set(GPIOB, GPIO3);
+	/* gpio_set(GPIOB, GPIO3); */
 
 	rcc_periph_clock_enable(RCC_GPIOA);
 	gpio_mode_setup(GPIOA, GPIO_MODE_INPUT, GPIO_PUPD_PULLUP, GPIO6);
@@ -66,13 +66,12 @@ main(void)
 
 	while(true) {
 		if (get_key_short(KEY_H)) {
-			/* gets incorrectly called a few times upon startup? */
-			gpio_toggle(GPIOB, GPIO3); // XXX
+			/* gpio_toggle(GPIOB, GPIO3); */
 			rtc_increment_hour();
 			display_needs_update = true;
 		}
 		if (get_key_short(KEY_M)) {
-			gpio_toggle(GPIOB, GPIO3); // XXX
+			/* gpio_toggle(GPIOB, GPIO3); */
 			rtc_increment_minute();
 			display_needs_update = true;
 		}

@@ -10,8 +10,8 @@ OPENCM3_LIBDIR=$(OPENCM3_DIR)/lib
 OPENCM3_BIN=$(OPENCM3_LIBDIR)/libopencm3_stm32l0.a
 
 CFLAGS= -std=c17 -Wall
-CFLAGS+= -O0
-#CFLAGS+= -Os
+#CFLAGS+= -O0
+CFLAGS+= -Os
 CFLAGS+= -g3
 CFLAGS+= -fno-common -ffunction-sections -fdata-sections
 CFLAGS+= -I$(OPENCM3_DIR)/include
