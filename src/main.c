@@ -65,13 +65,13 @@ main(void)
 	tm1637_setup();
 
 	while(true) {
-		if (get_key_press(KEY_H)) {
+		if (get_key_short(KEY_H)) {
 			/* gets incorrectly called a few times upon startup? */
 			gpio_toggle(GPIOB, GPIO3); // XXX
 			rtc_increment_hour();
 			display_needs_update = true;
 		}
-		if (get_key_press(KEY_M)) {
+		if (get_key_short(KEY_M)) {
 			gpio_toggle(GPIOB, GPIO3); // XXX
 			rtc_increment_minute();
 			display_needs_update = true;
