@@ -13,8 +13,8 @@ rcc_rtc_select_clock(uint32_t clock)
 }
 
 /* Convert 8-bit BCD to binary value. */
-static 
-uint8_t from_bcd(uint8_t val)
+static uint8_t 
+from_bcd(uint8_t val)
 {
         return (10 * (val >> 4) + (0x0F & val));
 }
@@ -30,6 +30,87 @@ rtc_get_time()
 	return time;
 }
 
+static uint8_t
+rtc_get_minute()
+{
+	uint8_t mt, mu;
+	uint32_t time;
+
+	time = rtc_get_time();
+
+	mt = from_bcd((time >> RTC_TR_MNT_SHIFT) & RTC_TR_MNT_MASK);
+	mu = from_bcd((time >> RTC_TR_MNU_SHIFT) & RTC_TR_MNU_MASK);
+
+	return mt*10 + mu;
+}
+
+static uint8_t
+rtc_get_hour()
+{
+	uint8_t ht, hu;
+	uint32_t time;
+
+	time = rtc_get_time();
+
+	ht = from_bcd((time >> RTC_TR_HT_SHIFT) & RTC_TR_HT_MASK);
+	hu = from_bcd((time >> RTC_TR_HU_SHIFT) & RTC_TR_HU_MASK);
+
+	return ht*10 + hu;
+}
+
+static inline void
+rtc_set_prep()
+{
+	rtc_unlock();
+	rtc_enable_bypass_shadow_register();
+	rtc_set_init_flag();
+	rtc_wait_for_init_ready();
+}
+
+static inline void
+rtc_set_finish()
+{
+	rtc_clear_init_flag();
+	rtc_disable_bypass_shadow_register();
+	rtc_lock();
+}
+
+void
+rtc_increment_hour()
+{
+	uint8_t h;
+	h = rtc_get_hour() + 1;
+
+	if (h > 23)
+		h = 0;
+
+	rtc_set_prep();
+
+	rtc_time_set_hour(h, true);
+
+	rtc_set_finish();
+}
+
+void
+rtc_increment_minute()
+{
+	uint8_t m;
+	m = rtc_get_minute() + 1;
+
+	if (m > 59)
+		m = 0;
+
+	rtc_set_prep();
+
+	rtc_time_set_minute(m);
+
+	rtc_set_finish();
+}
+
+/*
+ * Get a single 16-bit value representing current hour and minute i.e.
+ * 16:32 = 1632
+ */
 uint16_t
 rtc_get_hourminute()
 {

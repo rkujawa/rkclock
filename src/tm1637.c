@@ -21,7 +21,7 @@ static void tm1637_start(void);
 static void tm1637_stop(void);
 static void tm1637_read_result(void);
 static void tm1637_write_byte(uint8_t b);
-static void tm1637_delay_usec(uint32_t i);
+static void tm1637_delay(uint32_t i);
 inline static void tm1637_clk_high(void);
 inline static void tm1637_clk_low(void);
 inline static void tm1637_data_high(void);
@@ -62,10 +62,10 @@ static void
 tm1637_read_result(void)
 {
 	tm1637_clk_low();
-	tm1637_delay_usec(5);
+	tm1637_delay(5);
 
 	tm1637_clk_high();
-	tm1637_delay_usec(2);
+	tm1637_delay(2);
 	tm1637_clk_low();
 }
 
@@ -144,7 +144,7 @@ tm1637_start(void)
 {
 	tm1637_clk_high();
 	tm1637_data_high();
-	tm1637_delay_usec(2);
+	tm1637_delay(2);
 	tm1637_data_low();
 }
 
@@ -152,11 +152,11 @@ static void
 tm1637_stop(void)
 {
 	tm1637_clk_low();
-	tm1637_delay_usec(2);
+	tm1637_delay(2);
 	tm1637_data_low();
-	tm1637_delay_usec(2);
+	tm1637_delay(2);
 	tm1637_clk_high();
-	tm1637_delay_usec(2);
+	tm1637_delay(2);
 	tm1637_data_high();
 }
 
@@ -172,18 +172,22 @@ tm1637_write_byte(uint8_t b)
 		else {
 			tm1637_data_low();
 		}
-		tm1637_delay_usec(3);
+		tm1637_delay(3);
 		b >>= 1;
 		tm1637_clk_high();
-		tm1637_delay_usec(3);
+		tm1637_delay(3);
 	}
 }
 
+/* 
+ * Our tick timer runs relativly slow, at interval of 1ms, so here we just
+ * implement delay with nops.
+ */
 static void
-tm1637_delay_usec(uint32_t i)
+tm1637_delay(uint32_t i)
 {
 	for (; i>0; i--) {
-		for (int j = 0; j < 500; ++j) {
+		for (int j = 0; j < 100; ++j) {
 			__asm__("nop");
 		}
 	}
