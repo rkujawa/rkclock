@@ -26,12 +26,12 @@ LDFLAGS+=-Wl,--start-group -L$(OPENCM3_LIBDIR) -lc -lgcc -lnosys -mcpu=cortex-m0
 ##
 BINARY_ELF+=$(BINDIR)/$(BINARY).elf
 BINARY_BIN+=$(BINDIR)/$(BINARY).bin
-BINARY_HEX+=$(BINDIR)/$(BINARY).hex
+#BINARY_HEX+=$(BINDIR)/$(BINARY).hex
 
 OBJS=$(BINDIR)/main.o $(BINDIR)/tm1637.o $(BINDIR)/key.o $(BINDIR)/rtc.o
 #OBJS+=$(BINDIR)/usart.o
 
-all: outdir $(BINARY_ELF) $(BINARY_BIN) $(BINARY_HEX)
+all: outdir $(BINARY_ELF) $(BINARY_BIN) #$(BINARY_HEX)
 
 libopencm3/Makefile:
 	@echo "Initializing libopencm3 submodule"
@@ -43,10 +43,13 @@ $(OPENCM3_BIN): $(OPENCM3_DIR)/Makefile
 %.bin: %.elf
 	$(OBJCOPY) -Obinary $(*).elf $(*).bin
 
-%.hex: %.elf
-	$(OBJCOPY) -Oihex $(*).elf $(*).hex
+#%.hex: %.elf
+#	$(OBJCOPY) -Oihex $(*).elf $(*).hex
 
-$(BINDIR)/%.o : $(SRCDIR)/%.c
+$(BINDIR)/main.o : $(SRCDIR)/main.c
+	$(CC) -c $(CFLAGS) $< -o $@
+
+$(BINDIR)/%.o : $(SRCDIR)/%.c $(SRCDIR)/%.h
 	$(CC) -c $(CFLAGS) $< -o $@
 
 $(BINDIR)/$(BINARY).elf: $(OBJS) $(OPENCM3_BIN)
@@ -62,7 +65,7 @@ serial-console:
 	cu -s 9600 -l /dev/ttyACM0
 
 clean:
-	$(RM) $(BINDIR)/*.o $(BINARY_ELF) $(BINARY_BIN) $(BINARY_HEX)
+	$(RM) $(BINDIR)/*.o $(BINARY_ELF) $(BINARY_BIN) #$(BINARY_HEX)
 
 .PHONY: outdir clean flash serial-console all
 #$(V).SILENT:

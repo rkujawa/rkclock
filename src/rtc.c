@@ -3,6 +3,8 @@
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/rtc.h>
 
+#include "rtc.h"
+
 #define RTC_TR_RESERVED_MASK	(0x007F7F7FU)
 
 static void 
@@ -107,13 +109,26 @@ rtc_increment_minute()
 	rtc_set_finish();
 }
 
-/*
- * Get a single 16-bit value representing current hour and minute i.e.
- * 16:32 = 1632
- */
-uint16_t
-rtc_get_hourminute()
+struct bcd_time
+rtc_get_bcd_hourminute(void)
 {
+	uint32_t time;
+	struct bcd_time bt;
+
+	time = rtc_get_time();
+
+	bt.ht = (time >> RTC_TR_HT_SHIFT) & RTC_TR_HT_MASK;
+	bt.hu = (time >> RTC_TR_HU_SHIFT) & RTC_TR_HU_MASK;
+	bt.mt = (time >> RTC_TR_MNT_SHIFT) & RTC_TR_MNT_MASK;
+	bt.mu = (time >> RTC_TR_MNU_SHIFT) & RTC_TR_MNU_MASK;
+
+	return bt;
+}
+
+uint16_t
+rtc_get_hourminute(void)
+{
+	/*
 	uint8_t ht, hu, mt, mu;
 	uint32_t time;
 
@@ -125,6 +140,13 @@ rtc_get_hourminute()
 	mu = from_bcd((time >> RTC_TR_MNU_SHIFT) & RTC_TR_MNU_MASK);
 
 	return ht*1000 + hu*100 + mt*10 + mu;
+	*/
+
+	struct bcd_time bt;
+
+	bt = rtc_get_bcd_hourminute();
+
+	return bt.ht*1000 + bt.hu*100 + bt.mt*10 + bt.mu;
 }
 
 void 

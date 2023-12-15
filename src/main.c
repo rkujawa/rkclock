@@ -46,36 +46,49 @@ sys_tick_handler(void)
 	}
 }
 
+static inline void
+rcc_gpio_setup(void)
+{
+	/* GPIOB is used for display and (optionally) Nucleo on-board LED. */
+	rcc_periph_clock_enable(RCC_GPIOB);
+	/* GPIOA is used for keys. */
+	rcc_periph_clock_enable(RCC_GPIOA);
+}
 
 int
-main(void) 
+main(void)
 {
-	rcc_periph_clock_enable(RCC_GPIOB);
-	gpio_mode_setup(GPIOB, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO3);
-	/* gpio_set(GPIOB, GPIO3); */
-
-	rcc_periph_clock_enable(RCC_GPIOA);
-	gpio_mode_setup(GPIOA, GPIO_MODE_INPUT, GPIO_PUPD_PULLUP, GPIO6);
-	gpio_mode_setup(GPIOA, GPIO_MODE_INPUT, GPIO_PUPD_PULLUP, GPIO7);
-
+	rcc_gpio_setup();
+	key_setup();
 	rtc_setup();
 	/* usart_setup(); */
 	sys_tick_setup();
-
 	tm1637_setup();
 
+	/* Nucleo LED is connected to pin 3 on GPIOB, uncomment if needed. */
+	/*
+	gpio_mode_setup(GPIOB, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO3);
+	gpio_set(GPIOB, GPIO3); 
+	*/
+
 	while(true) {
-		if (get_key_short(KEY_H)) {
-			/* gpio_toggle(GPIOB, GPIO3); */
-			rtc_increment_hour();
-			display_needs_update = true;
+
+		switch(get_key_short(KEY_MASK)) {
+			/* Handle hour key press. */
+			case KEY_H:
+				rtc_increment_hour();
+				display_needs_update = true;
+				break;
+			/* Handle minute key press. */
+			case KEY_M:
+				rtc_increment_minute();
+				display_needs_update = true;
+				break;
 		}
-		if (get_key_short(KEY_M)) {
-			/* gpio_toggle(GPIOB, GPIO3); */
-			rtc_increment_minute();
-			display_needs_update = true;
-		}
+
+		/* Handle display update. */
 		if (display_needs_update) {
+			/* gpio_toggle(GPIOB, GPIO3); */
 			tm1637_display_decimal(rtc_get_hourminute(), true); 
 			display_needs_update = false;
 		}
