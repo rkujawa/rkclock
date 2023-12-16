@@ -3,6 +3,9 @@
 
 #include "bcd.h"
 
+/**
+ * @brief Configure the RTC hardware for operation.
+ */
 void rtc_setup(void);
 /**
  * @brief Get a single 16-bit value representing current hour and minute i.e. 16:32 = 1632.

@@ -7,6 +7,9 @@
 
 #define RTC_TR_RESERVED_MASK	(0x007F7F7FU)
 
+/**
+ * @brief Select clock signal source for the RTC.
+ */
 static void 
 rcc_rtc_select_clock(uint32_t clock)
 {
@@ -14,6 +17,10 @@ rcc_rtc_select_clock(uint32_t clock)
 	RCC_CSR |= (clock << RCC_CSR_RTCSEL_SHIFT);
 }
 
+/**
+ * @brief Get raw contents of time register.
+ * @return Register value.
+ */
 static uint32_t
 rtc_get_time()
 {
@@ -25,6 +32,10 @@ rtc_get_time()
 	return time;
 }
 
+/**
+ * @brief Get current minute from RTC.
+ * @return Current minute encoded in packed BCD.
+ */
 static uint8_t
 rtc_get_minute_bcd()
 {
@@ -39,6 +50,10 @@ rtc_get_minute_bcd()
 	return mu | (mt << 4);
 }
 
+/**
+ * @brief Get current hour from RTC.
+ * @return Current hour encoded in packed BCD.
+ */
 static uint8_t
 rtc_get_hour_bcd()
 {
@@ -53,6 +68,9 @@ rtc_get_hour_bcd()
 	return hu | (ht << 4);
 }
 
+/**
+ * @brief Prepare RTC hardware for changing the time.
+ */
 static void
 rtc_set_prep()
 {
@@ -62,6 +80,9 @@ rtc_set_prep()
 	rtc_wait_for_init_ready();
 }
 
+/**
+ * @brief Finish changing time in RTC hardware.
+ */
 static void
 rtc_set_finish()
 {
@@ -70,6 +91,10 @@ rtc_set_finish()
 	rtc_lock();
 }
 
+/**
+ * @brief Set hour in RTC hardware.
+ * @param h Hour encoded as packed BCD.
+ */
 static void
 rtc_time_set_hour_bcd(uint8_t h)
 {
@@ -80,6 +105,10 @@ rtc_time_set_hour_bcd(uint8_t h)
 
 }
 
+/**
+ * @brief Set minute in RTC hardware.
+ * @param m Minute encoded as packed BCD.
+ */
 static void 
 rtc_time_set_minute_bcd(uint8_t m)
 {
