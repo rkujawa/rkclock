@@ -5,7 +5,7 @@ BINDIR=bin
 SRCDIR=src
 BINARY=rkclock
 
-OPENCM3_DIR=./libopencm3
+OPENCM3_DIR=libopencm3
 OPENCM3_LIBDIR=$(OPENCM3_DIR)/lib
 OPENCM3_BIN=$(OPENCM3_LIBDIR)/libopencm3_stm32l0.a
 
@@ -19,16 +19,15 @@ CFLAGS+= -mcpu=cortex-m0plus -mthumb -msoft-float
 # STM32L0 starts up with MSI at 2.1Mhz
 CFLAGS+= -DSTM32L0
 
-#  -lopencm3_stm32l0
 LDSCRIPT=$(SRCDIR)/nucleo-l011k4.ld
-LDFLAGS+=-Wl,--start-group -L$(OPENCM3_LIBDIR) -lc -lgcc -lnosys -mcpu=cortex-m0plus -Wl,--end-group --static -nostartfiles -T $(LDSCRIPT)
+LDFLAGS+=-L$(OPENCM3_LIBDIR) -Wl,--start-group -lc -lgcc -lnosys -mcpu=cortex-m0plus -Wl,--end-group --static -nostartfiles -T $(LDSCRIPT)
 
 ##
 BINARY_ELF+=$(BINDIR)/$(BINARY).elf
 BINARY_BIN+=$(BINDIR)/$(BINARY).bin
 #BINARY_HEX+=$(BINDIR)/$(BINARY).hex
 
-OBJS=$(BINDIR)/main.o $(BINDIR)/tm1637.o $(BINDIR)/key.o $(BINDIR)/rtc.o
+OBJS=$(BINDIR)/main.o $(BINDIR)/tm1637.o $(BINDIR)/key.o $(BINDIR)/rtc.o $(BINDIR)/bcd.o
 #OBJS+=$(BINDIR)/usart.o
 
 all: outdir $(BINARY_ELF) $(BINARY_BIN) #$(BINARY_HEX)

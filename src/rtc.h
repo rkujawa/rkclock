@@ -1,15 +1,7 @@
 #ifndef _RTC_H_ 
 #define _RTC_H_ 
 
-/**
- * @brief BCD time representation.
- */
-struct bcd_time {
-	uint8_t ht;	/**< Hour tens. */
-	uint8_t hu;	/**< Hour units. */
-	uint8_t mt;	/**< Minute tens. */
-	uint8_t mu;	/**< Minute units. */
-};
+#include "bcd.h"
 
 void rtc_setup(void);
 /**
