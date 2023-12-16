@@ -146,7 +146,7 @@ rtc_increment_minute()
 }
 
 struct bcd_time
-rtc_get_bcd_hourminute(void)
+rtc_get_hourminute_bcd(void)
 {
 	uint32_t time;
 	struct bcd_time bt;
@@ -160,17 +160,17 @@ rtc_get_bcd_hourminute(void)
 
 	return bt;
 }
-
+/*
 uint16_t
 rtc_get_hourminute(void)
 {
 	struct bcd_time bt;
 
-	bt = rtc_get_bcd_hourminute();
+	bt = rtc_get_hourminute_bcd();
 
 	return bt.ht*1000 + bt.hu*100 + bt.mt*10 + bt.mu;
 }
-
+*/
 void 
 rtc_setup(void)
 {

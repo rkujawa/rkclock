@@ -7,10 +7,14 @@
  * @brief Configure the RTC hardware for operation.
  */
 void rtc_setup(void);
-/**
+/*
  * @brief Get a single 16-bit value representing current hour and minute i.e. 16:32 = 1632.
  */
-uint16_t rtc_get_hourminute();
+/*uint16_t rtc_get_hourminute();*/
+/**
+ * @brief Get current hour and minute encoded as structure of BCD nibbles.
+ */
+struct bcd_time rtc_get_hourminute_bcd(void);
 /**
  * @brief Increment time in RTC by one hour.
  */

@@ -89,7 +89,7 @@ main(void)
 		/* Handle display update. */
 		if (display_needs_update) {
 			/* gpio_toggle(GPIOB, GPIO3); */
-			tm1637_display_decimal(rtc_get_hourminute(), true); 
+			tm1637_display_bcd_time(rtc_get_hourminute_bcd()); 
 			display_needs_update = false;
 		}
 	}

@@ -1,13 +1,15 @@
 /*
  * Original author: Venki
  */
-#include <stdint.h>
-
 #ifndef _TM1637_H_
 #define _TM1637_H_
 
+#include <stdint.h>
+#include "bcd.h"
+
 void tm1637_setup(void);
-void tm1637_demo(void);
-void tm1637_display_decimal(int v, bool display_separator);
-void tm1637_set_brightness(uint8_t brightness);
+/*void tm1637_demo(void);
+void tm1637_display_decimal(int v, bool display_separator);*/
+void tm1637_display_bcd_time(struct bcd_time);
+
 #endif /* _TM1637_H_ */

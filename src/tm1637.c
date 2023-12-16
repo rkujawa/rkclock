@@ -26,6 +26,7 @@ inline static void tm1637_clk_high(void);
 inline static void tm1637_clk_low(void);
 inline static void tm1637_data_high(void);
 inline static void tm1637_data_low(void);
+static void tm1637_set_brightness(uint8_t brightness);
 
 const char segmentMap[] = {
 	0x3f, 0x06, 0x5b, 0x4f, 0x66, 0x6d, 0x7d, 0x07, // 0-7
@@ -68,6 +69,7 @@ tm1637_read_result(void)
 	tm1637_clk_low();
 }
 
+/*
 void 
 tm1637_demo(void)
 {
@@ -80,7 +82,7 @@ tm1637_demo(void)
 		tm1637_display_decimal(i++, 0);
 	}
 }
-
+*/
 
 void 
 tm1637_setup(void)
@@ -90,19 +92,10 @@ tm1637_setup(void)
 	tm1637_set_brightness(8);
 }
 
-
-void 
-tm1637_display_decimal(int v, bool display_separator)
+static void
+tm1637_write_segments(uint8_t digit_array[4])
 {
-	uint8_t i, digitArr[4];
-
-	for (i = 0; i < 4; ++i) {
-		digitArr[i] = segmentMap[v % 10];
-		if (i == 2 && display_separator) {
-			digitArr[i] |= 1 << 7;
-		}
-		v /= 10;
-	}
+	uint8_t i;
 
 	tm1637_start();
 	tm1637_write_byte(0x40);
@@ -114,17 +107,49 @@ tm1637_display_decimal(int v, bool display_separator)
 	tm1637_read_result();
 
 	for (i = 0; i < 4; ++i) {
-		tm1637_write_byte(digitArr[3 - i]);
+		tm1637_write_byte(digit_array[3 - i]);
 		tm1637_read_result();
 	}
 
 	tm1637_stop();
 }
 
+void
+tm1637_display_bcd_time(struct bcd_time bt)
+{
+	uint8_t digit_array[4];
+
+	digit_array[3] = segmentMap[bt.ht];
+	digit_array[2] = segmentMap[bt.hu];
+	digit_array[1] = segmentMap[bt.mt];
+	digit_array[0] = segmentMap[bt.mu];
+
+	/* Turn on the separator. */
+	digit_array[2] |= 1 << 7;
+
+	tm1637_write_segments(digit_array);
+
+}
+/*
+void 
+tm1637_display_decimal(int v, bool display_separator)
+{
+	uint8_t i, digit_array[4];
+
+	for (i = 0; i < 4; ++i) {
+		digit_array[i] = segmentMap[v % 10];
+		if (i == 2 && display_separator) {
+			digit_array[i] |= 1 << 7;
+		}
+		v /= 10;
+	}
+	tm1637_write_segments(digit_array);
+}
+*/
 /*
  * Valid brightness values: 0 - 8. 0 = display off.
  */
-void 
+static void 
 tm1637_set_brightness(uint8_t brightness)
 {
 	/*
