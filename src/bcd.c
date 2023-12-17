@@ -2,6 +2,7 @@
 
 #include "bcd.h"
 
+/*
 uint8_t
 from_bcd(uint8_t val)
 {
@@ -25,6 +26,7 @@ to_bcd(uint8_t val)
         }
         return bcd;
 }
+*/
 
 static uint8_t
 median (uint8_t x, uint8_t y, uint8_t z)
