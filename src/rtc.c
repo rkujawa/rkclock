@@ -160,17 +160,7 @@ rtc_get_hourminute_bcd(void)
 
 	return bt;
 }
-/*
-uint16_t
-rtc_get_hourminute(void)
-{
-	struct bcd_time bt;
 
-	bt = rtc_get_hourminute_bcd();
-
-	return bt.ht*1000 + bt.hu*100 + bt.mt*10 + bt.mu;
-}
-*/
 void 
 rtc_setup(void)
 {
@@ -210,20 +200,4 @@ rtc_setup(void)
 	rtc_lock();
 	RCC_CSR |= RCC_CSR_RTCEN;
 	rtc_wait_for_synchro();
-
-	/* If we ever need the interrupt... */
-	//rtc_interrupt_enable(RTC_SEC);
-
 }
-
-/*
-void rtc_isr(void)
-{
-	rtc_clear_flag(RTC_SEC);
-
-	gpio_toggle(GPIOC, GPIO12);
-	usart_test();
-}
-*/
-
-

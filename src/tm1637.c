@@ -130,22 +130,7 @@ tm1637_display_bcd_time(struct bcd_time bt)
 	tm1637_write_segments(digit_array);
 
 }
-/*
-void 
-tm1637_display_decimal(int v, bool display_separator)
-{
-	uint8_t i, digit_array[4];
 
-	for (i = 0; i < 4; ++i) {
-		digit_array[i] = segmentMap[v % 10];
-		if (i == 2 && display_separator) {
-			digit_array[i] |= 1 << 7;
-		}
-		v /= 10;
-	}
-	tm1637_write_segments(digit_array);
-}
-*/
 /*
  * Valid brightness values: 0 - 8. 0 = display off.
  */
