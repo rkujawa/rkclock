@@ -1,5 +1,5 @@
 /*
- * Nucleo-L011K4
+ * STM32L011K4
  */
 
 MEMORY

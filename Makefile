@@ -16,10 +16,10 @@ CFLAGS+= -g3
 CFLAGS+= -fno-common -ffunction-sections -fdata-sections
 CFLAGS+= -I$(OPENCM3_DIR)/include
 CFLAGS+= -mcpu=cortex-m0plus -mthumb -msoft-float
-# STM32L0 starts up with MSI at 2.1Mhz
+# STM32L0 starts up with MSI at 2.1MHz
 CFLAGS+= -DSTM32L0
 
-LDSCRIPT=$(SRCDIR)/nucleo-l011k4.ld
+LDSCRIPT=$(SRCDIR)/stm32l011k4.ld
 LDFLAGS+=-L$(OPENCM3_LIBDIR) -Wl,--start-group -lc -lgcc -lnosys -mcpu=cortex-m0plus -Wl,--end-group --static -nostartfiles -T $(LDSCRIPT)
 
 ##
