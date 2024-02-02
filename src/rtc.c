@@ -195,7 +195,7 @@ rtc_setup(void)
 	uint32_t async = 127;
 	rtc_set_prescaler(sync, async);
 
-	/* Exit init mode, write protect and enable the clock.. */
+	/* Exit init mode, write protect and enable the clock... */
 	rtc_clear_init_flag();
 	rtc_lock();
 	RCC_CSR |= RCC_CSR_RTCEN;

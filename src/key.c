@@ -9,7 +9,6 @@
 
 static volatile uint32_t key_press;
 static volatile uint32_t key_state;
-static volatile uint32_t key_rpt;
 
 /**
  * @brief Read debounced button presses.

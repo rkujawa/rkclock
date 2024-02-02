@@ -14,7 +14,6 @@
 #define MSI_DEFAULT_FREQ ((uint32_t)2097000) /* in Hz */
 #endif 
 
-static uint32_t ticks = 0;
 static bool display_needs_update = true;
 
 static void
@@ -32,6 +31,8 @@ sys_tick_setup(void)
 void 
 sys_tick_handler(void)
 {
+	static uint32_t ticks = 0;
+
 	/* We call this handler every 1ms so one tick = 1ms. */
 	ticks++;
 

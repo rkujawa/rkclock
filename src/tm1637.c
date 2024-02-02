@@ -5,7 +5,7 @@
  * tm1637.c
  *
  * Contains modifications by: Vidura Embedded
- * Contains modifications by: rkujawa
+ * Refactored by: rkujawa
  */
 #include <stdint.h>
 

@@ -56,6 +56,6 @@ usart_test(void)
 {
 	const char *testmsg = "test";
 
-	_write(1, (char*) testmsg, sizeof(nigg));
+	_write(1, (char*) testmsg, sizeof(testmsg));
 }
 
